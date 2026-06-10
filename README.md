@@ -1,18 +1,20 @@
 # AI-Open-Source-Capstone
 AI Open Source Capstone Summer 2026
 
-# Contribution [#]: [Issue Title]
+# Contribution [#]: Missing definitions for `Proc#<<` and `Proc#>>`
 
-**Contribution Number:** [1 / 2 / 3]  
-**Student:** [Jesse Oseafiana]  
-**Issue:** [GitHub issue link]  
-**Status:** [Phase I / Phase II / Phase III / Phase IV] [In Progress / Complete]
+**Contribution Number:** 1  
+**Student:** Jesse Oseafiana  
+**Issue:** https://github.com/sorbet/sorbet/issues/9656  
+**Status:** Phase I
 
 ---
 
 ## Why I Chose This Issue
 
 [1-2 paragraphs explaining why this issue interests you, how it matches your skills/learning goals, what you hope to learn]
+
+
 
 ---
 
