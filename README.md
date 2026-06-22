@@ -323,7 +323,7 @@ Commit follows the repo's convention (short imperative subject, no Conventional-
 - **Files modified:** `rbi/core/proc.rbi` (added the two `sig` + `def` blocks), `test/testdata/rbi/proc.rb` (regression test).
 - **Branch:** https://github.com/t8s1n/sorbet/tree/fix-issue-9656
 - **Key commit(s):** `59f2c19a4`, "Add sigs for Proc#<< and Proc#>>" (2 files changed, 30 insertions: `rbi/core/proc.rbi` and `test/testdata/rbi/proc.rb`)
-- **Draft PR:** [add the PR URL here once opened]
+- **Draft PR:** Not opened yet (planned for Phase IV)
 - **Approach decisions:** Argument and return both typed as `T.untyped`, mirroring the existing `Method#<<` / `Method#>>` definitions in `method.rbi`. Considered `Proc`/`Proc` (stricter, also typechecks) but chose consistency with the accepted sibling precedent. Documented in the PR.
 
 ---
