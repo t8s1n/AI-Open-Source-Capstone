@@ -3,7 +3,7 @@
 **Contribution Number:** 1
 **Student:** Jesse Oseafiana
 **Issue:** https://github.com/sorbet/sorbet/issues/9656
-**Status:** Phase II Complete
+**Status:** Phase III In Progress
 
 ---
 
@@ -212,7 +212,7 @@ Using UMPIRE framework (adapted):
 **Plan:**
 1. Fork `sorbet/sorbet` and create branch `fix-issue-9656` (default branch is `master`)
 2. Edit `rbi/core/proc.rbi`: add the `<<` and `>>` definitions with doc comments, grouped with the other operator methods near the top of the class body (right after `===`)
-3. Optionally add a test file at `test/testdata/rbi/proc_composition.rb`
+3. Add a regression test by appending to the existing `test/testdata/rbi/proc.rb`
 4. Re-verify locally with the shim approach that the repro produces zero errors
 5. Introduce myself in Sorbet's `#internals` Slack channel
 6. Open the PR referencing issue #9656
@@ -235,14 +235,21 @@ Using UMPIRE framework (adapted):
 
 ### Unit Tests
 
-Per CONTRIBUTING.md, tests are optional for RBI changes: the maintainers run the PR against Stripe's internal Ruby codebase as the real integration test. I'll write a small testdata file anyway as a regression anchor.
+Per CONTRIBUTING.md, tests are optional for RBI changes (the Sorbet team validates the PR against Stripe's codebase, and the recent commit history shows many stdlib sig additions merged with no test). I added a small regression test anyway by appending to the existing `test/testdata/rbi/proc.rb` fixture.
 
-The testdata format works by putting `# error:` comments inline on lines that should fail. A file with no `# error:` comments should produce zero errors.
+The testdata format asserts errors with inline `# error:` comments; a line with no annotation must produce no error. So the regression test is simply composition calls with no annotation: they error today (the methods are missing) and pass once the fix is in.
 
-- [ ] Test case 1: Basic `<<` and `>>` composition typechecks with no errors
-- [ ] Test case 2: Composition still works when chained, e.g. `(f << g << h)`
+- [x] Regression test: `<<` and `>>` compose without error. Lines appended to `test/testdata/rbi/proc.rb`:
 
-(With `T.untyped` there's no wrong-argument-type error to assert, since that's the deliberate consistency choice matching `Method#<<`. The fixture is just a no-error file.)
+  ```ruby
+  # Proc#<< and Proc#>> compose two callables (added in Ruby 2.6).
+  square = ->(x) { x * x }
+  double = ->(x) { x + x }
+  square << double
+  square >> double
+  ```
+
+  Verified in isolation with the locally installed Sorbet (0.6.13308): without the fix these lines raise two "Method does not exist" errors, so the test catches the regression; with the fix applied via shim, `srb tc` reports "No errors! Great job."
 
 ### Integration Tests
 
@@ -294,10 +301,26 @@ Set up a local Sorbet environment (Ruby 3.2.3 + sorbet gem) and reproduced the b
 
 Confirmed the bug reproduces consistently, confirmed my proposed fix resolves it, and confirmed the runtime composition matches the documented results. Ready to open the PR in Phase III.
 
+### Week 3 Progress (Phase III)
+
+Implemented the fix on branch `fix-issue-9656`.
+
+What I built:
+- Added `Proc#<<` and `Proc#>>` to `rbi/core/proc.rbi`, right after the `===` method, each with a doc comment and `sig {params(g: T.untyped).returns(T.untyped)}`. The wording and typing mirror the existing `Method#<<` / `Method#>>` definitions in `rbi/core/method.rbi`.
+- Appended a regression test to `test/testdata/rbi/proc.rb` (see Testing Strategy).
+
+Validation:
+- Ran `ruby -c rbi/core/proc.rbi` to confirm the edited file still parses (balanced `end`s).
+- Confirmed via the shim approach that the issue's repro now typechecks with zero errors, and that the test lines error without the fix but pass with it.
+
+Commit follows the repo's convention (short imperative subject, no Conventional-Commits prefix, PR number appended on squash-merge), e.g. `Add sigs for Proc#<< and Proc#>>`.
+
 ### Code Changes
 
-- **Files to modify:** `rbi/core/proc.rbi`
-- **Files to add (optional):** `test/testdata/rbi/proc_composition.rb`
+- **Files modified:** `rbi/core/proc.rbi` (added the two `sig` + `def` blocks), `test/testdata/rbi/proc.rb` (regression test).
+- **Branch:** https://github.com/t8s1n/sorbet/tree/fix-issue-9656
+- **Key commit(s):** [paste `git log --oneline` SHA after committing, e.g. `Add sigs for Proc#<< and Proc#>>`]
+- **Draft PR:** [add the PR URL here once opened]
 - **Approach decisions:** Argument and return both typed as `T.untyped`, mirroring the existing `Method#<<` / `Method#>>` definitions in `method.rbi`. Considered `Proc`/`Proc` (stricter, also typechecks) but chose consistency with the accepted sibling precedent. Documented in the PR.
 
 ---
