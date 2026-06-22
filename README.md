@@ -347,7 +347,7 @@ Commit follows the repo's convention (short imperative subject, no Conventional-
 **Maintainer Feedback:**
 - [Pending]
 
-**Status:** Draft PR pending (branch pushed; opening after Slack intro)
+**Status:** Branch pushed; draft PR planned for Phase IV
 
 ---
 
